@@ -1,0 +1,36 @@
+{
+  "name": "@rdcl/teensy",
+  "version": "1.0.0",
+  "description": "A teensy little web framework.",
+  "main": "index.js",
+  "scripts": {
+    "cover": "istanbul cover _mocha -- -R spec test/*",
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rudiculous/node-teensy"
+  },
+  "author": "RJ van der Weide <rj@rdcl.nl> (https://rdcl.nl)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rudiculous/node-teensy/issues"
+  },
+  "homepage": "https://github.com/rudiculous/node-teensy",
+  "dependencies": {
+    "@rdcl/format-server-address": "~1.0.*",
+    "co": "~4.6.*",
+    "glob": "~5.0.*",
+    "handlebars": "~3.0.*",
+    "js-yaml": "~3.3.*",
+    "koa": "~0.21.*",
+    "koa-static": "~1.4.*",
+    "marked": "~0.3.*"
+  },
+  "devDependencies": {
+    "chai": "~3.2.*",
+    "coveralls": "~2.11.*",
+    "istanbul": "~0.3.*",
+    "mocha": "~2.2.*"
+  }
+}
