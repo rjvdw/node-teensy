@@ -1,11 +1,11 @@
 {
   "name": "@rdcl/teensy",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A teensy little web framework.",
   "main": "index.js",
   "scripts": {
-      "cover": "./scripts/cover.sh",
-      "test": "./scripts/test.sh"
+    "cover": "./scripts/cover.sh",
+    "test": "./scripts/test.sh"
   },
   "repository": {
     "type": "git",
