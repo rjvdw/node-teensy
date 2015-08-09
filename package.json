@@ -4,8 +4,8 @@
   "description": "A teensy little web framework.",
   "main": "index.js",
   "scripts": {
-    "cover": "node --harmony_generators node_modules/.bin/istanbul cover _mocha -- -R spec test/*",
-    "test": "mocha --harmony-generators --reporter spec"
+      "cover": "./scripts/cover.sh",
+      "test": "./scripts/test.sh"
   },
   "repository": {
     "type": "git",
