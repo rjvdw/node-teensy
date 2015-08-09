@@ -18,10 +18,10 @@ function Teensy(root) {
     let _views = path.join(root, 'views');
 
     let Teensy = compose([function* (next) {
-        let view = yield View.get(root, _views, this.request.path);
+        let view = yield* View.get(root, _views, this.request.path);
 
         if (view) {
-            yield* view.render(this);
+            this.body = yield* view.render(this);
             return;
         }
 

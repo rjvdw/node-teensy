@@ -27,7 +27,7 @@ class View {
         this.template = template;
     }
 
-    *render(context) {
+    *render() {
         let meta = this.template.meta;
         meta.views = yield getViewListing(this._root, this._views);
 
@@ -37,7 +37,7 @@ class View {
             text = marked(text);
         }
 
-        context.body = yield getResponseBody(this._views, text, meta);
+        return yield getResponseBody(this._views, text, meta);
     }
 
 }
