@@ -5,75 +5,46 @@ require('./handlebarsSetup');
 const http = require('http');
 const path = require('path');
 
+const compose = require('koa-compose');
 const formatServerAddress = require('@rdcl/format-server-address');
 const koa = require('koa');
 const serve = require('koa-static');
 
-let View; // loaded on initialize
+const View = require('./View');
 
 
-let _app;
-let _env;
-let _initialized = false;
+function Teensy(root) {
+    let _public = path.join(root, 'public');
+    let _views = path.join(root, 'views');
 
+    let Teensy = compose([function* (next) {
+        let view = yield View.get(root, _views, this.request.path);
 
-function* Teensy(next) {
-    let view = yield View.get(this.request.path);
+        if (view) {
+            yield* view.render(this);
+            return;
+        }
 
-    if (view) {
-        yield* view.render(this);
-        return;
-    }
+        yield* next;
+    }, serve(_public)]);
 
-    yield* next;
-}
+    Teensy.listen = function listen(port, host, cb) {
+        let app = koa();
+        app.use(Teensy);
 
-Teensy.initialize = function initialize(rootDir, environment, app) {
-    Teensy.initialize = function() {
-        console.warn('Teensy has already been initialized!');
-        return Teensy;
+        let server = app.listen.apply(app, arguments);
+
+        server.on('listening', function () {
+            console.log(
+                'listening at %s',
+                formatServerAddress(server.address())
+            );
+        });
+
+        return server;
     };
-
-    View = require('./View');
-
-    if (environment == null) {
-        environment = 'development';
-    }
-    _env = environment;
-
-    Teensy.dirs = {
-        root: rootDir,
-        public: path.join(rootDir, 'public'),
-        views: path.join(rootDir, 'views'),
-    };
-
-    if (app == null) {
-        app = koa();
-    }
-
-    _app = app;
-    _app.use(Teensy);
-    _app.use(serve(Teensy.dirs.public));
-
-    _initialized = true;
 
     return Teensy;
-};
-
-Teensy.listen = function listen(port, host) {
-    let server;
-
-    let args = Array.prototype.slice.call(arguments);
-    args.push(function () {
-        let addr = server.address();
-
-        console.log(
-            'Application running on %s',
-            formatServerAddress(addr)
-        );
-    });
-
-    server = _app.listen.apply(_app, args);
-};
+}
 
 exports = module.exports = Teensy;

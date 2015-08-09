@@ -5,11 +5,9 @@ const path = require('path');
 
 const yaml = require('js-yaml');
 
-const Teensy = require('./Teensy');
 
-
-function parseMeta(data) {
-    const defaultMeta = fs.readFileSync(path.join(Teensy.dirs.root, 'meta.yml'), 'utf8');
+function parseMeta(root, data) {
+    const defaultMeta = fs.readFileSync(path.join(root, 'meta.yml'), 'utf8');
 
     let parsed = {
         meta: {},

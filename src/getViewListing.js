@@ -7,11 +7,10 @@ const co = require('co');
 const glob = require('glob');
 
 const parseMeta = require('./parseMeta');
-const Teensy = require('./Teensy');
 
 
-function getViewListing() {
-    let base = Teensy.dirs.views;
+function getViewListing(root, views) {
+    let base = views;
     if (!base.endsWith('/')) base += '/';
 
     return new Promise(function executor(resolve, reject) {
@@ -53,7 +52,7 @@ function getViewListing() {
                         }
 
                         if (parts.length === 0) {
-                            dir.files.push(getFile(file, relative));
+                            dir.files.push(getFile(root, file, relative));
                             break partsLoop;
                         }
 
@@ -83,7 +82,7 @@ function getViewListing() {
     });
 }
 
-function getFile(absolute, relative) {
+function getFile(root, absolute, relative) {
     return new Promise(function executor(resolve, reject) {
         let uri = '/' + relative.replace(/(\.md)?\.hbs$/, '');
 
@@ -95,7 +94,7 @@ function getFile(absolute, relative) {
                 return;
             }
 
-            let meta = parseMeta(data).meta;
+            let meta = parseMeta(root, data).meta;
 
             resolve({
                 path: uri,

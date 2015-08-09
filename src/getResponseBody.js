@@ -5,11 +5,9 @@ const path = require('path');
 
 const Handlebars = require('handlebars');
 
-const Teensy = require('./Teensy');
 
-
-function getResponseBody(main, meta) {
-    const layouts = path.join(Teensy.dirs.views, 'layouts');
+function getResponseBody(views, main, meta) {
+    const layouts = path.join(views, 'layouts');
 
     return new Promise(function executor(resolve, reject) {
         let layout = path.join(layouts, meta.layout);

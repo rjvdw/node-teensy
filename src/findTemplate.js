@@ -8,11 +8,10 @@ const glob = require('glob');
 const Handlebars = require('handlebars');
 
 const parseMeta = require('./parseMeta');
-const Teensy = require('./Teensy');
 
 
-function findTemplate(target) {
-    target = path.join(Teensy.dirs.views, target);
+function findTemplate(root, views, target) {
+    target = path.join(views, target);
     if (target.endsWith('.html')) {
         target = target.substring(0, target.length - '.html'.length);
     }
@@ -47,7 +46,7 @@ function findTemplate(target) {
 
             let file = files[0];
 
-            if (!file.startsWith(Teensy.dirs.views)) {
+            if (!file.startsWith(views)) {
                 resolve(null);
             }
 
@@ -58,7 +57,7 @@ function findTemplate(target) {
                 }
 
                 try {
-                    let parsed = parseMeta(data);
+                    let parsed = parseMeta(root, data);
 
                     resolve({
                         file: file,
