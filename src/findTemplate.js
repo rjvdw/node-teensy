@@ -1,25 +1,26 @@
 "use strict";
 
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
+var fs = require('fs');
+var path = require('path');
+var util = require('util');
 
-const glob = require('glob');
-const Handlebars = require('handlebars');
+var glob = require('glob');
+var Handlebars = require('handlebars');
+var Promise = require('bluebird');
 
-const parseMeta = require('./parseMeta');
+var parseMeta = require('./parseMeta');
 
 
 function findTemplate(root, views, target) {
     target = path.join(views, target);
-    if (target.endsWith('.html')) {
+    if (target.lastIndexOf('.html') === target.length - '.html'.length) {
         target = target.substring(0, target.length - '.html'.length);
     }
 
     return new Promise(function executor(resolve, reject) {
-        let globPattern;
+        var globPattern;
 
-        if (target === '' || target.endsWith('/')) {
+        if (target === '' || target[target.length - 1] === '/') {
             globPattern = util.format(
                 '%sindex.*',
                 target
@@ -29,7 +30,7 @@ function findTemplate(root, views, target) {
             globPattern = util.format(
                 '{%s.*,%sindex.*}',
                 target,
-                target.endsWith('/') ? target : (target + '/')
+                (target[target.length - 1] === '/') ? target : (target + '/')
             );
         }
 
@@ -44,9 +45,9 @@ function findTemplate(root, views, target) {
                 return;
             }
 
-            let file = files[0];
+            var file = files[0];
 
-            if (!file.startsWith(views)) {
+            if (file.indexOf(views) !== 0) {
                 resolve(null);
             }
 
@@ -57,11 +58,11 @@ function findTemplate(root, views, target) {
                 }
 
                 try {
-                    let parsed = parseMeta(root, data);
+                    var parsed = parseMeta(root, data);
 
                     resolve({
                         file: file,
-                        isMarkdown: Boolean(file.endsWith('.md.hbs')),
+                        isMarkdown: file.lastIndexOf('.md.hbs') === file.length - '.md.hbs'.length,
                         render: Handlebars.compile(parsed.template),
                         meta: parsed.meta,
                     });

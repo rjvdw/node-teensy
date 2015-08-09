@@ -1,20 +1,21 @@
 "use strict";
 
-const fs = require('fs');
-const path = require('path');
+var fs = require('fs');
+var path = require('path');
 
-const co = require('co');
-const glob = require('glob');
+var co = require('co');
+var glob = require('glob');
+var Promise = require('bluebird');
 
-const parseMeta = require('./parseMeta');
+var parseMeta = require('./parseMeta');
 
 
 function getViewListing(root, views) {
-    let base = views;
-    if (!base.endsWith('/')) base += '/';
+    var base = views;
+    if (base[base.length - 1] !== '/') base += '/';
 
     return new Promise(function executor(resolve, reject) {
-        let globPattern = path.join(base, '**');
+        var globPattern = path.join(base, '**');
         glob(globPattern, {
             nodir: true,
         }, function (err, files) {
@@ -23,27 +24,27 @@ function getViewListing(root, views) {
                 return;
             }
 
-            let listing = {
+            var listing = {
                 files: [],
                 dirs: {},
             };
 
             co(function* () {
-                let promiseLists = [
+                var promiseLists = [
                     listing.files,
                 ];
 
                 filesLoop:
-                for (let file of files) {
+                for (var file of files) {
                     if (file.indexOf(base) !== 0) {
                         continue;
                     }
 
-                    let relative = file.replace(base, '');
-                    let parts = relative.split(path.sep);
+                    var relative = file.replace(base, '');
+                    var parts = relative.split(path.sep);
 
-                    let part;
-                    let dir = listing;
+                    var part;
+                    var dir = listing;
 
                     partsLoop:
                     while ( (part = parts.shift()) != null) {
@@ -70,8 +71,8 @@ function getViewListing(root, views) {
                 }
 
                 // Resolve all promises.
-                for (let list of promiseLists) {
-                    for (let i = list.length - 1; i >= 0; i -= 1) {
+                for (var list of promiseLists) {
+                    for (var i = list.length - 1; i >= 0; i -= 1) {
                         list[i] = yield list[i];
                     }
                 }
@@ -84,7 +85,7 @@ function getViewListing(root, views) {
 
 function getFile(root, absolute, relative) {
     return new Promise(function executor(resolve, reject) {
-        let uri = '/' + relative.replace(/(\.md)?\.hbs$/, '');
+        var uri = '/' + relative.replace(/(\.md)?\.hbs$/, '');
 
         fs.readFile(absolute, {
             encoding: 'utf8',
@@ -94,7 +95,7 @@ function getFile(root, absolute, relative) {
                 return;
             }
 
-            let meta = parseMeta(root, data).meta;
+            var meta = parseMeta(root, data).meta;
 
             resolve({
                 path: uri,

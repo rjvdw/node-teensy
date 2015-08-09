@@ -2,23 +2,23 @@
 require('./handlebarsSetup');
 
 
-const http = require('http');
-const path = require('path');
+var http = require('http');
+var path = require('path');
 
-const compose = require('koa-compose');
-const formatServerAddress = require('@rdcl/format-server-address');
-const koa = require('koa');
-const serve = require('koa-static');
+var compose = require('koa-compose');
+var formatServerAddress = require('@rdcl/format-server-address');
+var koa = require('koa');
+var serve = require('koa-static');
 
-const View = require('./View');
+var View = require('./View');
 
 
 function Teensy(root) {
-    let _public = path.join(root, 'public');
-    let _views = path.join(root, 'views');
+    var _public = path.join(root, 'public');
+    var _views = path.join(root, 'views');
 
-    let Teensy = compose([function* (next) {
-        let view = yield* View.get(root, _views, this.request.path);
+    var Teensy = compose([function* (next) {
+        var view = yield* View.get(root, _views, this.request.path);
 
         if (view) {
             this.body = yield* view.render(this);
@@ -29,10 +29,10 @@ function Teensy(root) {
     }, serve(_public)]);
 
     Teensy.listen = function listen(port, host, cb) {
-        let app = koa();
+        var app = koa();
         app.use(Teensy);
 
-        let server = app.listen.apply(app, arguments);
+        var server = app.listen.apply(app, arguments);
 
         server.on('listening', function () {
             console.log(

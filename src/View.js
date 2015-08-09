@@ -1,45 +1,39 @@
 "use strict";
 
-const marked = require('marked');
+var marked = require('marked');
 
-const findTemplate = require('./findTemplate');
-const getViewListing = require('./getViewListing');
-const getResponseBody = require('./getResponseBody');
+var findTemplate = require('./findTemplate');
+var getViewListing = require('./getViewListing');
+var getResponseBody = require('./getResponseBody');
 
 
-class View {
+function View(root, views, template) {
+    this._root = root;
+    this._views = views;
+    this.template = template;
+}
 
-    static *get(root, views, target) {
-        // TODO: Caching?
-        let template = yield findTemplate(root, views, target);
+View.prototype.render = function* render() {
+    var meta = this.template.meta;
+    meta.views = yield getViewListing(this._root, this._views);
 
-        if (template == null) {
-            return null;
-        }
-        else {
-            return new View(root, views, template);
-        }
+    var text = this.template.render(meta);
+
+    if (this.template.isMarkdown) {
+        text = marked(text);
     }
 
-    constructor(root, views, template) {
-        this._root = root;
-        this._views = views;
-        this.template = template;
+    return yield getResponseBody(this._views, text, meta);
+};
+
+View.get = function* get(root, views, target) {
+    var template = yield findTemplate(root, views, target);
+
+    if (template == null) {
+        return null;
     }
 
-    *render() {
-        let meta = this.template.meta;
-        meta.views = yield getViewListing(this._root, this._views);
-
-        let text = this.template.render(meta);
-
-        if (this.template.isMarkdown) {
-            text = marked(text);
-        }
-
-        return yield getResponseBody(this._views, text, meta);
-    }
-
+    return new View(root, views, template);
 }
 
 exports = module.exports = View;

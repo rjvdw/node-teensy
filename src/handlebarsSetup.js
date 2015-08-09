@@ -1,9 +1,9 @@
 "use strict";
 
-const util = require('util');
+var util = require('util');
 
-const Handlebars = require('handlebars');
-const marked = require('marked');
+var Handlebars = require('handlebars');
+var marked = require('marked');
 
 
 Handlebars.registerHelper('raw', function (value) {
@@ -11,10 +11,10 @@ Handlebars.registerHelper('raw', function (value) {
 });
 
 Handlebars.registerHelper('meta', function () {
-    let res = '';
+    var res = '';
 
-    for (let name of Object.keys(this.metaTags)) {
-        let content = this.metaTags[name];
+    for (var name of Object.keys(this.metaTags)) {
+        var content = this.metaTags[name];
 
         res += util.format(
             '<meta name="%s" content="%s">\n',
@@ -27,7 +27,7 @@ Handlebars.registerHelper('meta', function () {
 });
 
 Handlebars.registerHelper('markdown', function (options) {
-    let md = options.fn(0);
+    var md = options.fn(0);
 
     return new Handlebars.SafeString(marked(md));
 });

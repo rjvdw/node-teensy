@@ -2,29 +2,29 @@
 require('../src/handlebarsSetup');
 
 
-const path = require('path');
+var path = require('path');
 
-const expect = require('chai').expect;
-const Handlebars = require('handlebars');
-const should = require('chai').should();
+var expect = require('chai').expect;
+var Handlebars = require('handlebars');
+var should = require('chai').should();
 
 
 describe('Handlebar helpers', function () {
     it('the raw helper should leave its input alone', function () {
-        let template = Handlebars.compile('{{raw "<h1>{{foo}}</h1>"}}');
-        let parsed = template({foo: 'bar'});
+        var template = Handlebars.compile('{{raw "<h1>{{foo}}</h1>"}}');
+        var parsed = template({foo: 'bar'});
 
         expect(parsed).to.equal('<h1>{{foo}}</h1>');
     });
 
     it('the meta helper should print meta headers', function () {
-        let template = Handlebars.compile('{{meta}}');
-        let parsed = template({metaTags: {
+        var template = Handlebars.compile('{{meta}}');
+        var parsed = template({metaTags: {
             description: 'test',
             author: 'test <test@test.com>',
         }});
 
-        let metaTags = [
+        var metaTags = [
             '<meta name="description" content="test">',
             '<meta name="author" content="test &lt;test@test.com&gt;">',
         ];
@@ -43,8 +43,8 @@ describe('Handlebar helpers', function () {
     });
 
     it('the markdown helper should parse markdown', function () {
-        let template = Handlebars.compile('<p>test</p>\n{{#markdown}}# Title{{/markdown}}');
-        let parsed = template({});
+        var template = Handlebars.compile('<p>test</p>\n{{#markdown}}# Title{{/markdown}}');
+        var parsed = template({});
 
         expect(parsed).to.equal('<p>test</p>\n<h1 id="title">Title</h1>\n');
     });

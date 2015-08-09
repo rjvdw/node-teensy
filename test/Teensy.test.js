@@ -1,19 +1,19 @@
 "use strict";
 
-const http = require('http');
-const path = require('path');
+var http = require('http');
+var path = require('path');
 
-const expect = require('chai').expect;
-const should = require('chai').should();
+var expect = require('chai').expect;
+var should = require('chai').should();
 
-const Teensy = require('../src/Teensy');
+var Teensy = require('../src/Teensy');
 
-const sampleAppDir = path.join(__dirname, 'sampleapp');
+var sampleAppDir = path.join(__dirname, 'sampleapp');
 
 
 describe('#Teensy', function () {
     it('should create a new Teensy middleware', function () {
-        let teensy = Teensy(sampleAppDir);
+        var teensy = Teensy(sampleAppDir);
 
         expect(teensy).to.be.a('function');
         expect(teensy.constructor.name).to.equal('GeneratorFunction');
@@ -22,15 +22,15 @@ describe('#Teensy', function () {
     });
 
     it('should start a HTTP server with the .listen method', function (done) {
-        let server = Teensy(sampleAppDir).listen(function () {
+        var server = Teensy(sampleAppDir).listen(function () {
             done();
             server.close();
         });
     });
 
     it('should return valid responses', function (done) {
-        let server = Teensy(sampleAppDir).listen(function () {
-            let addr = server.address();
+        var server = Teensy(sampleAppDir).listen(function () {
+            var addr = server.address();
 
             http.get({
                 host: addr.address,
@@ -42,7 +42,7 @@ describe('#Teensy', function () {
                 expect(res).to.have.property('statusCode', 200);
 
                 res.setEncoding('utf8');
-                let body = '';
+                var body = '';
                 res.on('data', function (chunk) {
                     body += chunk;
                 });

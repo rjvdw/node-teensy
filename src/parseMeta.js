@@ -1,22 +1,22 @@
 "use strict";
 
-const fs = require('fs');
-const path = require('path');
+var fs = require('fs');
+var path = require('path');
 
-const yaml = require('js-yaml');
+var yaml = require('js-yaml');
 
 
 function parseMeta(root, data) {
-    const defaultMeta = fs.readFileSync(path.join(root, 'meta.yml'), 'utf8');
+    var defaultMeta = fs.readFileSync(path.join(root, 'meta.yml'), 'utf8');
 
-    let parsed = {
+    var parsed = {
         meta: {},
         template: data,
     };
 
-    if (data.startsWith('{{!')) {
-        let i = data.indexOf('}}');
-        let meta = defaultMeta;
+    if (data.indexOf('{{!') === 0) {
+        var i = data.indexOf('}}');
+        var meta = defaultMeta;
         meta += data.substring('{{!'.length, i);
         parsed.meta = yaml.safeLoad(meta).meta;
     }
