@@ -7,7 +7,7 @@ var Handlebars = require('handlebars');
 var Promise = require('bluebird');
 
 
-function getResponseBody(views, main, meta) {
+function getResponseBody(views, view, meta) {
     var layouts = path.join(views, 'layouts');
 
     return new Promise(function executor(resolve, reject) {
@@ -22,7 +22,7 @@ function getResponseBody(views, main, meta) {
             try {
                 var render = Handlebars.compile(data);
 
-                meta.main = main;
+                meta['$view'] = view;
                 resolve(render(meta));
             }
             catch (er) {

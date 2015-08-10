@@ -10,8 +10,8 @@ var should = require('chai').should();
 
 
 describe('Handlebar helpers', function () {
-    it('the raw helper should leave its input alone', function () {
-        var template = Handlebars.compile('{{raw "<h1>{{foo}}</h1>"}}');
+    it('the yield helper should leave its input alone', function () {
+        var template = Handlebars.compile('{{yield "<h1>{{foo}}</h1>"}}');
         var parsed = template({foo: 'bar'});
 
         expect(parsed).to.equal('<h1>{{foo}}</h1>');

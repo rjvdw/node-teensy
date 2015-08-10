@@ -6,7 +6,7 @@ var Handlebars = require('handlebars');
 var marked = require('marked');
 
 
-Handlebars.registerHelper('raw', function (value) {
+Handlebars.registerHelper('yield', function (value) {
     return new Handlebars.SafeString(value);
 });
 
