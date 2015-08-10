@@ -18,6 +18,19 @@ function Teensy(root) {
     var _views = path.join(root, 'views');
 
     var Teensy = compose([function* (next) {
+        Object.defineProperty(this.state, 'teensy', {
+            enumerable: true,
+            value: {},
+        });
+
+        yield* next;
+
+        // only handle HEAD and GET requests
+        if (this.method !== 'HEAD' && this.method !== 'GET') return;
+
+        // response is already handled
+        if (this.body != null || this.status !== 404) return;
+
         var view = yield* View.get(root, _views, this.request.path);
 
         if (view) {

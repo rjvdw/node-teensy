@@ -43,7 +43,11 @@ describe('#View', function () {
     it('should be able to render', function (done) {
         co(function* () {
             var view = yield* View.get(sampleAppDir, views, 'index');
-            var rendered = yield* view.render();
+            var rendered = yield* view.render({
+                state: {
+                    teensy: {},
+                },
+            });
 
             expect(rendered).to.equal('<!DOCTYPE html>\n\n<h1>Test</h1>\n\n');
         })
@@ -57,7 +61,11 @@ describe('#View', function () {
     it('should render index when called with a path that resolves to a directory', function (done) {
         co(function* () {
             var view = yield* View.get(sampleAppDir, views, '');
-            var rendered = yield* view.render();
+            var rendered = yield* view.render({
+                state: {
+                    teensy: {},
+                },
+            });
 
             expect(rendered).to.equal('<!DOCTYPE html>\n\n<h1>Test</h1>\n\n');
         })
@@ -71,7 +79,11 @@ describe('#View', function () {
     it('should correctly handle markdown views', function (done) {
         co(function* () {
             var view = yield* View.get(sampleAppDir, views, 'markdown');
-            var rendered = yield* view.render();
+            var rendered = yield* view.render({
+                state: {
+                    teensy: {},
+                },
+            });
 
             expect(rendered).to.equal('<!DOCTYPE html>\n<h1 id="markdown">Markdown</h1>\n\n');
         })

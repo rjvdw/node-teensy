@@ -13,10 +13,6 @@ function View(root, views, template) {
 }
 
 View.prototype.render = function* render(context) {
-    if (context == null) context = {};
-    if (context.state == null) context.state = {};
-    if (context.state.teensy == null) context.state.teensy = {};
-
     var templateData = context.state.teensy;
     templateData.$meta = this.template.meta;
     var text = this.template.render(templateData);
