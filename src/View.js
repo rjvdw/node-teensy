@@ -3,7 +3,6 @@
 var marked = require('marked');
 
 var findTemplate = require('./findTemplate');
-var getViewListing = require('./getViewListing');
 var getResponseBody = require('./getResponseBody');
 
 
@@ -15,8 +14,6 @@ function View(root, views, template) {
 
 View.prototype.render = function* render() {
     var meta = this.template.meta;
-    meta.views = yield getViewListing(this._root, this._views);
-
     var text = this.template.render(meta);
 
     if (this.template.isMarkdown) {
