@@ -17,6 +17,7 @@ function Teensy(root) {
     var _public = path.join(root, 'public');
     var _views = path.join(root, 'views');
 
+    var _Handlebars = require('handlebars');
     var _parseMeta = require('./parseMeta');
 
     var Teensy = compose([function* (next) {
@@ -46,6 +47,11 @@ function Teensy(root) {
     Teensy.parseMeta = function parseMeta(data) {
         return _parseMeta(root, data);
     };
+
+    Object.defineProperty(Teensy, 'Handlebars', {
+        enumerable: true,
+        val: _Handlebars,
+    });
 
     Teensy.listen = function listen(port, host, cb) {
         var app = koa();
