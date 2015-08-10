@@ -1,6 +1,6 @@
 {
   "name": "@rdcl/teensy",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A teensy little web framework.",
   "main": "index.js",
   "scripts": {
