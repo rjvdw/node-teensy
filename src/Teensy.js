@@ -50,7 +50,7 @@ function Teensy(root) {
 
     Object.defineProperty(Teensy, 'Handlebars', {
         enumerable: true,
-        val: _Handlebars,
+        value: _Handlebars,
     });
 
     Teensy.listen = function listen(port, host, cb) {
