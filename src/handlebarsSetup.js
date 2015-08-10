@@ -13,8 +13,8 @@ Handlebars.registerHelper('yield', function (value) {
 Handlebars.registerHelper('meta', function () {
     var res = '';
 
-    for (var name of Object.keys(this.metaTags)) {
-        var content = this.metaTags[name];
+    for (var name of Object.keys(this.$meta.metaTags)) {
+        var content = this.$meta.metaTags[name];
 
         res += util.format(
             '<meta name="%s" content="%s">\n',

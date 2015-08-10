@@ -19,10 +19,14 @@ describe('Handlebar helpers', function () {
 
     it('the meta helper should print meta headers', function () {
         var template = Handlebars.compile('{{meta}}');
-        var parsed = template({metaTags: {
-            description: 'test',
-            author: 'test <test@test.com>',
-        }});
+        var parsed = template({
+            $meta: {
+                metaTags: {
+                    description: 'test',
+                    author: 'test <test@test.com>',
+                },
+            }
+        });
 
         var metaTags = [
             '<meta name="description" content="test">',
