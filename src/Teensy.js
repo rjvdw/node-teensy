@@ -17,7 +17,7 @@ function Teensy(root) {
     var _public = path.join(root, 'public');
     var _views = path.join(root, 'views');
 
-    var parseMeta = require('./parseMeta');
+    var _parseMeta = require('./parseMeta');
 
     var Teensy = compose([function* (next) {
         Object.defineProperty(this.state, 'teensy', {
@@ -44,7 +44,7 @@ function Teensy(root) {
     }, serve(_public)]);
 
     Teensy.parseMeta = function parseMeta(data) {
-        return parseMeta(root, data);
+        return _parseMeta(root, data);
     };
 
     Teensy.listen = function listen(port, host, cb) {
