@@ -12,15 +12,20 @@ function View(root, views, template) {
     this.template = template;
 }
 
-View.prototype.render = function* render() {
-    var meta = this.template.meta;
-    var text = this.template.render(meta);
+View.prototype.render = function* render(context) {
+    if (context == null) context = {};
+    if (context.state == null) context.state = {};
+    if (context.state.teensy == null) context.state.teensy = {};
+
+    var templateData = context.state.teensy;
+    templateData.$meta = this.template.meta;
+    var text = this.template.render(templateData);
 
     if (this.template.isMarkdown) {
         text = marked(text);
     }
 
-    return yield getResponseBody(this._views, text, meta);
+    return yield getResponseBody(this._views, text, templateData);
 };
 
 View.get = function* get(root, views, target) {

@@ -7,11 +7,11 @@ var Handlebars = require('handlebars');
 var Promise = require('bluebird');
 
 
-function getResponseBody(views, view, meta) {
+function getResponseBody(views, view, templateData) {
     var layouts = path.join(views, 'layouts');
 
     return new Promise(function executor(resolve, reject) {
-        var layout = path.join(layouts, meta.layout);
+        var layout = path.join(layouts, templateData.$meta.layout);
 
         fs.readFile(layout, {encoding: 'utf8'}, function (err, data) {
             if (err) {
@@ -22,8 +22,8 @@ function getResponseBody(views, view, meta) {
             try {
                 var render = Handlebars.compile(data);
 
-                meta['$view'] = view;
-                resolve(render(meta));
+                templateData['$view'] = view;
+                resolve(render(templateData));
             }
             catch (er) {
                 reject(er);
