@@ -38,7 +38,7 @@ function Teensy(root) {
 
         if (view) {
             this.body = yield* view.render(this);
-            return;
+            this.status = 404;
         }
     }, serve(_public), function* Teensy(next) {
         yield* next;
