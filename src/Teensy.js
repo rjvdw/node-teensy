@@ -40,9 +40,9 @@ function Teensy(root) {
             this.body = yield* view.render(this);
             return;
         }
-
-        yield* next;
     }, serve(_public), function* handle404(next) {
+        yield* next;
+
         // only handle HEAD and GET requests
         if (this.method !== 'HEAD' && this.method !== 'GET') return;
 
@@ -55,8 +55,6 @@ function Teensy(root) {
             this.body = yield* view.render(this);
             return;
         }
-
-        yield* next;
     }]);
 
     Teensy.parseMeta = function parseMeta(data) {
