@@ -20,7 +20,7 @@ function Teensy(root) {
     var _Handlebars = require('handlebars');
     var _parseMeta = require('./parseMeta');
 
-    var Teensy = compose([function* (next) {
+    var Teensy = compose([function* prepareTeensy(next) {
         Object.defineProperty(this.state, 'teensy', {
             enumerable: true,
             value: {},
@@ -34,13 +34,13 @@ function Teensy(root) {
         // response is already handled
         if (this.body != null || this.status !== 404) return;
 
-        var view = yield* View.get(root, _views, this.request.path);
+        var view = yield* View.get(root, _views, '404');
 
         if (view) {
             this.body = yield* view.render(this);
             return;
         }
-    }, serve(_public), function* handle404(next) {
+    }, serve(_public), function* Teensy(next) {
         yield* next;
 
         // only handle HEAD and GET requests
@@ -49,11 +49,10 @@ function Teensy(root) {
         // response is already handled
         if (this.body != null || this.status !== 404) return;
 
-        var view = yield* View.get(root, _views, '404');
+        var view = yield* View.get(root, _views, this.request.path);
 
         if (view) {
             this.body = yield* view.render(this);
-            return;
         }
     }]);
 
