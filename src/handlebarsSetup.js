@@ -27,7 +27,7 @@ Handlebars.registerHelper('meta', function () {
 });
 
 Handlebars.registerHelper('markdown', function (options) {
-    var md = options.fn(0);
+    var md = options.fn(this);
 
     return new Handlebars.SafeString(marked(md));
 });
