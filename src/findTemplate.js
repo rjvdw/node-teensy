@@ -5,9 +5,9 @@ var path = require('path');
 var util = require('util');
 
 var glob = require('glob');
-var Handlebars = require('handlebars');
 var Promise = require('bluebird');
 
+var compileTemplate = require('./compileTemplate');
 var parseMeta = require('./parseMeta');
 
 
@@ -51,19 +51,19 @@ function findTemplate(root, views, target) {
                 resolve(null);
             }
 
-            fs.readFile(file, {encoding: 'utf8'}, function (err, data) {
+            compileTemplate(file, function (err, compiled) {
                 if (err) {
                     reject(err);
                     return;
                 }
 
                 try {
-                    var parsed = parseMeta(root, data);
+                    var parsed = parseMeta(root, compiled.data);
 
                     resolve({
                         file: file,
                         isMarkdown: file.lastIndexOf('.md.hbs') === file.length - '.md.hbs'.length,
-                        render: Handlebars.compile(parsed.template),
+                        render: compiled.render,
                         meta: parsed.meta,
                     });
                 }

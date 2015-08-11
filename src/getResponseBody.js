@@ -3,8 +3,9 @@
 var fs = require('fs');
 var path = require('path');
 
-var Handlebars = require('handlebars');
 var Promise = require('bluebird');
+
+var compileTemplate = require('./compileTemplate');
 
 
 function getResponseBody(views, view, templateData) {
@@ -13,21 +14,14 @@ function getResponseBody(views, view, templateData) {
     return new Promise(function executor(resolve, reject) {
         var layout = path.join(layouts, templateData.$meta.layout);
 
-        fs.readFile(layout, {encoding: 'utf8'}, function (err, data) {
+        compileTemplate(layout, function (err, compiled) {
             if (err) {
                 reject(err);
                 return;
             }
 
-            try {
-                var render = Handlebars.compile(data);
-
-                templateData['$view'] = view;
-                resolve(render(templateData));
-            }
-            catch (er) {
-                reject(er);
-            }
+            templateData['$view'] = view;
+            resolve(compiled.render(templateData))
         });
     });
 }
