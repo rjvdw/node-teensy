@@ -42,7 +42,22 @@ function Teensy(root) {
         }
 
         yield* next;
-    }, serve(_public)]);
+    }, serve(_public), function* handle404(next) {
+        // only handle HEAD and GET requests
+        if (this.method !== 'HEAD' && this.method !== 'GET') return;
+
+        // response is already handled
+        if (this.body != null || this.status !== 404) return;
+
+        var view = yield* View.get(root, _views, '404');
+
+        if (view) {
+            this.body = yield* view.render(this);
+            return;
+        }
+
+        yield* next;
+    }]);
 
     Teensy.parseMeta = function parseMeta(data) {
         return _parseMeta(root, data);
