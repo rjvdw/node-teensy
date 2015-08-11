@@ -17,7 +17,6 @@ function compileTemplate(file, cb) {
 
             if (cache[file] != null) {
                 if (cache[file].lastModified >= stat.mtime) {
-                    console.log('serving from cache');
                     resolve(cache[file]);
                     return;
                 }
@@ -37,7 +36,6 @@ function compileTemplate(file, cb) {
                     data: data,
                 };
 
-                console.log('not serving from cache');
                 resolve(cache[file]);
             });
         });
