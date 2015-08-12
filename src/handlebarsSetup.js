@@ -4,7 +4,27 @@ var util = require('util');
 
 var Handlebars = require('handlebars');
 var marked = require('marked');
+var moment = require('moment');
 
+
+Handlebars.registerHelper('date', function (value, format, options) {
+    if (options == null) {
+        options = format;
+        format = null;
+    }
+
+    var formatted;
+    if (format == null) {
+        formatted = moment(value).format();
+    }
+    else {
+        formatted = moment(value).format(format);
+    }
+
+    formatted = Handlebars.Utils.escapeExpression(formatted);
+
+    return new Handlebars.SafeString(formatted);
+});
 
 Handlebars.registerHelper('yield', function (value) {
     return new Handlebars.SafeString(value);

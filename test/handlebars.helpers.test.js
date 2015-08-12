@@ -6,10 +6,35 @@ var path = require('path');
 
 var expect = require('chai').expect;
 var Handlebars = require('handlebars');
+var moment = require('moment');
 var should = require('chai').should();
 
 
 describe('Handlebar helpers', function () {
+    it('the date helper should properly format dates', function() {
+        var dateString = '1995-12-17T03:24:00+00:00';
+        var date = new Date(dateString);
+        var parsed;
+
+        parsed = getParsed('{{date d}}', date);
+        expect(parsed).to.equal(moment(date).format());
+
+        parsed = getParsed('{{date d "YYYYMMDD"}}', date);
+        expect(parsed).to.equal(moment(date).format('YYYYMMDD'));
+
+        parsed = getParsed('{{date d}}', dateString);
+        expect(parsed).to.equal(moment(dateString).format());
+
+        parsed = getParsed('{{date d "YYYYMMDD"}}', dateString);
+        expect(parsed).to.equal(moment(dateString).format('YYYYMMDD'));
+
+
+        function getParsed(template) {
+            var compiled = Handlebars.compile(template);
+            return compiled({d: date});
+        }
+    });
+
     it('the yield helper should leave its input alone', function () {
         var template = Handlebars.compile('{{yield "<h1>{{foo}}</h1>"}}');
         var parsed = template({foo: 'bar'});
