@@ -1,9 +1,10 @@
 "use strict";
+var Promise = require('bluebird');
 
-var fs = require('fs');
+var fs = Promise.promisifyAll(require("fs"));
 var path = require('path');
 
-var Promise = require('bluebird');
+var co = require('co');
 
 var compileTemplate = require('./compileTemplate');
 
@@ -11,18 +12,13 @@ var compileTemplate = require('./compileTemplate');
 function getResponseBody(views, view, templateData) {
     var layouts = path.join(views, 'layouts');
 
-    return new Promise(function executor(resolve, reject) {
+    return co(function* () {
         var layout = path.join(layouts, templateData.$meta.layout);
 
-        compileTemplate(layout, function (err, compiled) {
-            if (err) {
-                reject(err);
-                return;
-            }
+        var compiled = yield compileTemplate(layout);
 
-            templateData['$view'] = view;
-            resolve(compiled.render(templateData))
-        });
+        templateData['$view'] = view;
+        return compiled.render(templateData);
     });
 }
 

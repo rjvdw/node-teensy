@@ -56,8 +56,8 @@ function Teensy(root) {
         }
     }]);
 
-    Teensy.parseMeta = function parseMeta(data, cb) {
-        return _parseMeta(root, data, cb);
+    Teensy.parseMeta = function parseMeta(data) {
+        return _parseMeta(root, data);
     };
 
     Object.defineProperty(Teensy, 'Handlebars', {

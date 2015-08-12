@@ -1,57 +1,35 @@
 "use strict";
-
-var fs = require('fs');
-
-var Handlebars = require('handlebars');
 var Promise = require('bluebird');
+
+var fs = Promise.promisifyAll(require("fs"));
+
+var co = require('co');
+var Handlebars = require('handlebars');
 
 var cache = {};
 
-function compileTemplate(file, cb) {
-    var promise = new Promise(function executor(resolve, reject) {
-        fs.stat(file, function (err, stat) {
-            if (err) {
-                reject(err);
-                return;
+function compileTemplate(file) {
+    return co(function* () {
+        var stat = yield fs.statAsync(file);
+
+        if (cache[file] != null) {
+            if (cache[file].lastModified >= stat.mtime) {
+                return cache[file];
             }
+        }
 
-            if (cache[file] != null) {
-                if (cache[file].lastModified >= stat.mtime) {
-                    resolve(cache[file]);
-                    return;
-                }
-            }
-
-            fs.readFile(file, {
-                encoding: 'utf8',
-            }, function (err, data) {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                cache[file] = {
-                    render: Handlebars.compile(data),
-                    lastModified: stat.mtime,
-                    data: data,
-                };
-
-                resolve(cache[file]);
-            });
+        var data = yield fs.readFileAsync(file, {
+            encoding: 'utf8',
         });
+
+        cache[file] = {
+            render: Handlebars.compile(data),
+            lastModified: stat.mtime,
+            data: data,
+        };
+
+        return cache[file];
     });
-
-    if (cb != null) {
-        promise
-            .then(function (compiled) {
-                cb(null, compiled);
-            })
-            .catch(function (err) {
-                cb(err);
-            });
-    }
-
-    return promise;
 }
 
 exports = module.exports = compileTemplate;
