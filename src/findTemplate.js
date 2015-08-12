@@ -57,8 +57,11 @@ function findTemplate(root, views, target) {
                     return;
                 }
 
-                try {
-                    var parsed = parseMeta(root, compiled.data);
+                parseMeta(root, compiled.data, function (err, parsed) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
 
                     resolve({
                         file: file,
@@ -66,10 +69,7 @@ function findTemplate(root, views, target) {
                         render: compiled.render,
                         meta: parsed.meta,
                     });
-                }
-                catch (er) {
-                    reject(er);
-                }
+                });
             });
         });
     });
