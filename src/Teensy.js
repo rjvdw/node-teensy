@@ -54,6 +54,17 @@ function Teensy(root) {
         }
     }]);
 
+    Teensy.parseMeta = function parseMeta(data) {
+        return require('./parseMeta')(root, data);
+    };
+
+    Object.defineProperty(Teensy, 'nunjucks', {
+        enumerable: true,
+        get: function get() {
+            return nunjucks;
+        },
+    });
+
     Teensy.listen = function listen(port, host, cb) {
         var app = koa();
         app.use(Teensy);

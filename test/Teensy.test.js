@@ -14,13 +14,24 @@ var sampleAppWithout404Dir = path.join(__dirname, 'sampleapp_without404');
 
 
 describe('#Teensy', function () {
-    it('should create a new Teensy middleware', function () {
+    it('should create a new Teensy middleware', function (done) {
         var teensy = Teensy(sampleAppDir);
 
         expect(teensy).to.be.a('function');
         expect(teensy.constructor.name).to.equal('GeneratorFunction');
         expect(teensy).to.have.property('listen');
+        expect(teensy).to.have.property('parseMeta');
+        expect(teensy).to.have.property('nunjucks');
         expect(teensy.listen).to.be.a('function');
+
+        teensy.parseMeta('{#meta:\n  <<: *default\n#}')
+            .then(function (parsed) {
+                expect(parsed.meta).to.deep.equal({layout:'main.hbs',metaTags:{robots:'index,follow'}});
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
     });
 
     it('should start a HTTP server with the .listen method', function (done) {
