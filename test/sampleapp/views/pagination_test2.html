@@ -1,0 +1,7 @@
+<ul>
+{% pagination pgn, 2 %}
+  <li><a href="?pageNo={{ pageNo }}">{{ pageNo }}</a></li>
+{% current %}
+  <li class="active">{{ pageNo }}</li>
+{% endpagination %}
+</ul>

@@ -1,6 +1,4 @@
 "use strict";
-require('./handlebarsSetup');
-
 
 var http = require('http');
 var path = require('path');
@@ -10,15 +8,15 @@ var formatServerAddress = require('@rdcl/format-server-address');
 var koa = require('koa');
 var serve = require('koa-static');
 
-var View = require('./View');
+var nunjucksSetup = require('./nunjucksSetup');
+var parseMeta = require('./parseMeta');
 
 
 function Teensy(root) {
     var _public = path.join(root, 'public');
     var _views = path.join(root, 'views');
 
-    var _Handlebars = require('handlebars');
-    var _parseMeta = require('./parseMeta');
+    var nunjucks = nunjucksSetup(_views);
 
     var Teensy = compose([function* prepareTeensy(next) {
         Object.defineProperty(this.state, 'teensy', {
@@ -34,10 +32,10 @@ function Teensy(root) {
         // response is already handled
         if (this.body != null || this.status !== 404) return;
 
-        var view = yield* View.get(root, _views, '404');
+        var view = yield getView(this, root, nunjucks, '404');
 
         if (view) {
-            this.body = yield* view.render(this);
+            this.body = view;
             this.status = 404;
         }
     }, serve(_public), function* Teensy(next) {
@@ -49,21 +47,12 @@ function Teensy(root) {
         // response is already handled
         if (this.body != null || this.status !== 404) return;
 
-        var view = yield* View.get(root, _views, this.request.path);
+        var view = yield getView(this, root, nunjucks, this.request.path);
 
         if (view) {
-            this.body = yield* view.render(this);
+            this.body = view;
         }
     }]);
-
-    Teensy.parseMeta = function parseMeta(data) {
-        return _parseMeta(root, data);
-    };
-
-    Object.defineProperty(Teensy, 'Handlebars', {
-        enumerable: true,
-        value: _Handlebars,
-    });
 
     Teensy.listen = function listen(port, host, cb) {
         var app = koa();
@@ -82,6 +71,43 @@ function Teensy(root) {
     };
 
     return Teensy;
+}
+
+function getView(context, root, nunjucks, name) {
+    if (name[name.length - 1] === '/') {
+        name += 'index';
+    }
+
+    if (name[0] === '/') {
+        name = name.substring(1);
+    }
+
+    name += '.html';
+
+    return new Promise(function executor(resolve, reject) {
+        nunjucks.getTemplate(name, function (err, tmpl) {
+            if (err) {
+                if (err.message.indexOf('template not found') === 0) {
+                    resolve(null);
+                    return;
+                }
+
+                reject(err);
+                return;
+            }
+
+            parseMeta(root, tmpl.tmplStr)
+                .then(function onSuccess(parsed) {
+                    var templateData = context.state.teensy;
+                    templateData.$meta = parsed.meta;
+
+                    resolve(tmpl.render(templateData));
+                })
+                .catch(function onError(err) {
+                    reject(err);
+                });
+        });
+    });
 }
 
 exports = module.exports = Teensy;
