@@ -1,0 +1,9 @@
+{#meta:
+  <<: *default
+  title: Test
+#}
+{% extends './layouts/main.html' %}
+
+{% block main %}
+<h1>{{$meta.title}}</h1>
+{% endblock %}
