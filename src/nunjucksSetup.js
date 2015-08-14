@@ -71,8 +71,8 @@ function nunjucksSetup(views) {
 
                     res += util.format(
                         '<meta name="%s" content="%s">\n',
-                        escape(name),
-                        escape(content)
+                        trim(escape(name)),
+                        trim(escape(content))
                     );
                 });
 
@@ -169,6 +169,14 @@ function escape(str) {
         .replace('<', '&lt;')
         .replace('>', '&gt;')
         .replace('"', '&quot;');
+
+    return str;
+}
+
+function trim(str) {
+    str = str
+        .replace(/^\s+/, '')
+        .replace(/\s+$/, '');
 
     return str;
 }
