@@ -54,6 +54,10 @@ function Teensy(root) {
         }
     }]);
 
+    Teensy.getView = function (context, target) {
+        return getView(context, root, nunjucks, target);
+    };
+
     Teensy.parseMeta = function parseMeta(data) {
         return require('./parseMeta')(root, data);
     };

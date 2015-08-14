@@ -22,11 +22,24 @@ describe('#Teensy', function () {
         expect(teensy).to.have.property('listen');
         expect(teensy).to.have.property('parseMeta');
         expect(teensy).to.have.property('nunjucks');
+        expect(teensy).to.have.property('getView');
         expect(teensy.listen).to.be.a('function');
 
         teensy.parseMeta('{#meta:\n  <<: *default\n#}')
             .then(function (parsed) {
                 expect(parsed.meta).to.deep.equal({layout:'main.hbs',metaTags:{robots:'index,follow'}});
+            })
+            .then(function () {
+                return teensy.getView({
+                    state: {
+                        teensy: {},
+                    },
+                }, '/')
+            })
+            .then(function (view) {
+                expect(view).to.equal('<!DOCTYPE html>\n\n<h1>Test</h1>\n\n');
+            })
+            .then(function () {
                 done();
             })
             .catch(function (err) {
