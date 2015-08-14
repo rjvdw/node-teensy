@@ -63,21 +63,24 @@ function nunjucksSetup(views) {
 
             run: function (context, metaTags) {
                 var res = '';
-                var metaKeys = Object.keys(metaTags);
-                metaKeys.sort();
 
-                metaKeys.forEach(function (name) {
-                    var content = metaTags[name];
-                    if (Array.isArray(content)) {
-                        content = content.join(',');
-                    }
+                if (metaTags != null) {
+                    var metaKeys = Object.keys(metaTags);
+                    metaKeys.sort();
 
-                    res += util.format(
-                        '<meta name="%s" content="%s">\n',
-                        trim(escape(name)),
-                        trim(escape(content))
-                    );
-                });
+                    metaKeys.forEach(function (name) {
+                        var content = metaTags[name];
+                        if (Array.isArray(content)) {
+                            content = content.join(',');
+                        }
+
+                        res += util.format(
+                            '<meta name="%s" content="%s">\n',
+                            trim(escape(name)),
+                            trim(escape(content))
+                        );
+                    });
+                }
 
                 return new nunjucks.runtime.SafeString(res);
             },

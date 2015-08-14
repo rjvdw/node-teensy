@@ -47,7 +47,9 @@ describe('#nunjucks', function () {
     });
 
     it('should handle the {% meta %} tag correctly', function () {
-        var res = nunjucks.renderString('{% meta $meta.metaTags %}', {
+        var
+        
+        res = nunjucks.renderString('{% meta $meta.metaTags %}', {
             $meta: {
                 metaTags: {
                     description: 'This is a description',
@@ -56,8 +58,10 @@ describe('#nunjucks', function () {
                 },
             },
         });
-
         expect(res).to.equal('<meta name="author" content="Author &lt;auth@test.com&gt;">\n<meta name="description" content="This is a description">\n<meta name="keywords" content="foo,bar,baz">\n');
+
+        res = nunjucks.renderString('{% meta $meta.metaTags %}');
+        expect(res).to.equal('');
     });
 
     it('should handle the {% pagination %} tag correctly', function () {
