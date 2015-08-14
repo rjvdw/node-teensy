@@ -68,6 +68,9 @@ function nunjucksSetup(views) {
 
                 metaKeys.forEach(function (name) {
                     var content = metaTags[name];
+                    if (Array.isArray(content)) {
+                        content = content.join(',');
+                    }
 
                     res += util.format(
                         '<meta name="%s" content="%s">\n',
