@@ -4,9 +4,13 @@
 [![Build Status][travis-image]][travis-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
 
-A teensy little web framework.
+A teensy little web framework. Teensy is a web framework that doesn't use models or controllers. Although these are undeniably useful for large web applications, for small, static websites, they sometimes introduce an unnecessary amount of overhead. Teensy uses the nunjucks template language for its views, and uses Yaml for managing data.
 
-## TODO
+## Installing
+Simply run `npm install @rdcl/teensy`.
+
+## Usage
+*TODO*
 
 
 [npm-image]: https://img.shields.io/npm/v/@rdcl/teensy.svg?style=flat-square
