@@ -4,7 +4,11 @@
 [![Build Status][travis-image]][travis-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
 
-A teensy little web framework. Teensy is a web framework that doesn't use models or controllers. Although these are undeniably useful for large web applications, for small, static websites, they sometimes introduce an unnecessary amount of overhead. Teensy uses the nunjucks template language for its views, and uses Yaml for managing data.
+A teensy little web framework. Teensy is a web framework that doesn't use models or controllers. Although these are undeniably useful for large web applications, for small, static websites, they sometimes introduce an unnecessary amount of overhead.
+
+Teensy runs as Koa middleware and includes koa-static for serving static files. Views are handled by nunjucks. A view may optionally have some yaml at the top (in comments), which is then made available to the template parser. This yaml may extend meta.yaml. This way, you can easily share data between views.
+
+Since Teensy is Koa middleware, you need to use a version of node.js which has generator support.
 
 ## Installing
 Simply run `npm install @rdcl/teensy`.
