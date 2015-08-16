@@ -20,10 +20,11 @@ function parseMeta(root, data) {
             template: data,
         };
 
-        if (data.indexOf('{#') === 0) {
-            var i = data.indexOf('#}');
+        var start = data.indexOf('{#!');
+        if (start > -1) {
+            var end = data.indexOf('!#}', start);
             var meta = defaultMeta;
-            meta += data.substring('{#'.length, i);
+            meta += data.substring(start + '{#!'.length, end);
             parsed.meta = yaml.safeLoad(meta).meta;
         }
 

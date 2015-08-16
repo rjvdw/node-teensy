@@ -25,7 +25,7 @@ describe('#Teensy', function () {
         expect(teensy).to.have.property('getView');
         expect(teensy.listen).to.be.a('function');
 
-        teensy.parseMeta('{#meta:\n  <<: *default\n#}')
+        teensy.parseMeta('{#!meta:\n  <<: *default\n!#}')
             .then(function (parsed) {
                 expect(parsed.meta).to.deep.equal({layout:'main.hbs',metaTags:{robots:'index,follow'}});
             })

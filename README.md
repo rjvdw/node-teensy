@@ -46,11 +46,11 @@ default: &default
 ```
 
 ```
-{#meta:
+{# views/index.html #}
+{#!meta:
   <<: *default
   bodyClass: index
-#}
-{# views/index.html #}
+!#}
 
 <!DOCTYPE html>
 <html>
@@ -66,7 +66,7 @@ default: &default
 </html>
 ```
 
-Notice that index.html *starts* with a comment containing meta data. This has to be the first comment in a view, and no other comments are allowed on the first line. This is something that might change in the future, as it is a tad restrictive.
+Notice that index.html *starts* with a comment containing meta data. This meta data is recognized by the `{#!` and `!#}` tags.
 
 Also notice that the meta data extends meta data in meta.yml, by using the `<<: *default` notation.
 

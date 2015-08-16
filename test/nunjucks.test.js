@@ -43,7 +43,7 @@ describe('#nunjucks', function () {
     it('should handle the {% markdown %} tag correctly', function () {
         var res = nunjucks.render('markdown_test.html');
 
-        expect(res).to.equal('\n\n<h1 id="this-is-a-page-with-markdown">This is a page with markdown</h1>\n<p>It has some text.</p>\n<ul>\n<li>even a bullet list</li>\n<li>with multiple bullets</li>\n<li>imagine that</li>\n</ul>\n\n');
+        expect(res).to.equal('\n\n\n<h1 id="this-is-a-page-with-markdown">This is a page with markdown</h1>\n<p>It has some text.</p>\n<ul>\n<li>even a bullet list</li>\n<li>with multiple bullets</li>\n<li>imagine that</li>\n</ul>\n\n');
     });
 
     it('should handle the {% meta %} tag correctly', function () {
