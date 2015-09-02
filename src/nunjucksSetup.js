@@ -1,190 +1,190 @@
-"use strict";
+'use strict'
 
-var util = require('util');
+var util = require('util')
 
-var marked = require('marked');
-var moment = require('moment');
-var nunjucks = require('nunjucks');
+var marked = require('marked')
+var moment = require('moment')
+var nunjucks = require('nunjucks')
 
 
 function nunjucksSetup(views) {
-    var env = new nunjucks.Environment(
-        new nunjucks.FileSystemLoader(views),
-        {
-            watch: true,
-            autoescape: true,
+  var env = new nunjucks.Environment(
+    new nunjucks.FileSystemLoader(views),
+    {
+      watch: true,
+      autoescape: true,
+    }
+  )
+
+  env.addFilter('date', function (value, format) {
+    return (
+      format == null
+        ? moment(value).format()
+        : moment(value).format(format)
+    )
+  })
+
+  env.addExtension('MarkdownParser', (function () {
+    var ext = {
+      tags: ['markdown'],
+
+      parse: function (parser, nodes, lexer) {
+        var tok = parser.nextToken()
+        var args = parser.parseSignature(null, true)
+        parser.advanceAfterBlockEnd(tok.value)
+
+        var body = parser.parseUntilBlocks('endmarkdown')
+        parser.advanceAfterBlockEnd()
+
+        return new nodes.CallExtension(ext, 'run', args, [body])
+      },
+
+      run: function (context, body) {
+        var md = marked(body())
+
+        return new nunjucks.runtime.SafeString(md)
+      },
+    }
+
+    return ext
+  })())
+
+  env.addExtension('MetaTags', (function () {
+    var ext = {
+      tags: ['meta'],
+
+      parse: function (parser, nodes, lexer) {
+        var tok = parser.nextToken()
+        var args = parser.parseSignature(null, true)
+        parser.advanceAfterBlockEnd(tok.value)
+
+        return new nodes.CallExtension(ext, 'run', args)
+      },
+
+      run: function (context, metaTags) {
+        var res = ''
+
+        if (metaTags != null) {
+          var metaKeys = Object.keys(metaTags)
+          metaKeys.sort()
+
+          metaKeys.forEach(function (name) {
+            var content = metaTags[name]
+            if (Array.isArray(content)) {
+              content = content.join(',')
+            }
+
+            res += util.format(
+              '<meta name="%s" content="%s">\n',
+              trim(escape(name)),
+              trim(escape(content))
+            )
+          })
         }
-    );
 
-    env.addFilter('date', function (value, format) {
-        return (
-            format == null
-                ? moment(value).format()
-                : moment(value).format(format)
-        );
-    });
+        return new nunjucks.runtime.SafeString(res)
+      },
+    }
 
-    env.addExtension('MarkdownParser', (function () {
-        var ext = {
-            tags: ['markdown'],
+    return ext
+  })())
 
-            parse: function (parser, nodes, lexer) {
-                var tok = parser.nextToken();
-                var args = parser.parseSignature(null, true);
-                parser.advanceAfterBlockEnd(tok.value);
+  env.addExtension('Pagination', (function () {
+    var ext = {
+      tags: ['pagination'],
 
-                var body = parser.parseUntilBlocks('endmarkdown');
-                parser.advanceAfterBlockEnd();
+      parse: function (parser, nodes, lexer) {
+        var tok = parser.nextToken()
+        var args = parser.parseSignature(null, true)
+        parser.advanceAfterBlockEnd(tok.value)
 
-                return new nodes.CallExtension(ext, 'run', args, [body]);
-            },
+        var body = parser.parseUntilBlocks('current')
+        parser.skipSymbol('current')
+        parser.skip(lexer.TOKEN_BLOCK_END)
 
-            run: function (context, body) {
-                var md = marked(body());
+        var currentBody = parser.parseUntilBlocks('dotdot', 'endpagination')
+        var dotdotBody = null
 
-                return new nunjucks.runtime.SafeString(md);
-            },
-        };
+        if (parser.skipSymbol('dotdot')) {
+          parser.skip(lexer.TOKEN_BLOCK_END)
+          dotdotBody = parser.parseUntilBlocks('endpagination')
+        }
 
-        return ext;
-    })());
+        parser.advanceAfterBlockEnd()
 
-    env.addExtension('MetaTags', (function () {
-        var ext = {
-            tags: ['meta'],
+        return new nodes.CallExtension(ext, 'run', args, [body, currentBody, dotdotBody])
+      },
 
-            parse: function (parser, nodes, lexer) {
-                var tok = parser.nextToken();
-                var args = parser.parseSignature(null, true);
-                parser.advanceAfterBlockEnd(tok.value);
+      run: function (context, pagination, nrAround, body, currentBody, dotdotBody) {
+        var res = ''
+        var start = pagination.current - nrAround
+        var end = pagination.current + nrAround
 
-                return new nodes.CallExtension(ext, 'run', args);
-            },
+        // TODO: Is there a nicer way of doing this?
+        var pageNoBackup = context.ctx.pageNo
 
-            run: function (context, metaTags) {
-                var res = '';
+        if (start < 1) {
+          end += 1 - start
+          start = 1
+        }
 
-                if (metaTags != null) {
-                    var metaKeys = Object.keys(metaTags);
-                    metaKeys.sort();
+        if (end > pagination.lastPage) {
+          start -= end - pagination.lastPage
+          end = pagination.lastPage
+        }
 
-                    metaKeys.forEach(function (name) {
-                        var content = metaTags[name];
-                        if (Array.isArray(content)) {
-                            content = content.join(',');
-                        }
+        if (start < 1) {
+          start = 1
+        }
 
-                        res += util.format(
-                            '<meta name="%s" content="%s">\n',
-                            trim(escape(name)),
-                            trim(escape(content))
-                        );
-                    });
-                }
+        if (dotdotBody && start > 1) {
+          res += dotdotBody()
+        }
 
-                return new nunjucks.runtime.SafeString(res);
-            },
-        };
+        for (var i = start; i <= end; i++) {
+          context.ctx.pageNo = i
 
-        return ext;
-    })());
+          if (i === pagination.current) {
+            res += currentBody()
+          }
+          else {
+            res += body()
+          }
+        }
 
-    env.addExtension('Pagination', (function () {
-        var ext = {
-            tags: ['pagination'],
+        if (dotdotBody && end < pagination.lastPage) {
+          res += dotdotBody()
+        }
 
-            parse: function (parser, nodes, lexer) {
-                var tok = parser.nextToken();
-                var args = parser.parseSignature(null, true);
-                parser.advanceAfterBlockEnd(tok.value);
+        context.ctx.pageNo = pageNoBackup
 
-                var body = parser.parseUntilBlocks('current');
-                parser.skipSymbol('current');
-                parser.skip(lexer.TOKEN_BLOCK_END);
+        return new nunjucks.runtime.SafeString(res)
+      },
+    }
 
-                var currentBody = parser.parseUntilBlocks('dotdot', 'endpagination');
-                var dotdotBody = null;
+    return ext
+  })())
 
-                if (parser.skipSymbol('dotdot')) {
-                    parser.skip(lexer.TOKEN_BLOCK_END);
-                    dotdotBody = parser.parseUntilBlocks('endpagination');
-                }
-
-                parser.advanceAfterBlockEnd();
-
-                return new nodes.CallExtension(ext, 'run', args, [body, currentBody, dotdotBody]);
-            },
-
-            run: function (context, pagination, nrAround, body, currentBody, dotdotBody) {
-                var res = '';
-                var start = pagination.current - nrAround;
-                var end = pagination.current + nrAround;
-
-                // TODO: Is there a nicer way of doing this?
-                var pageNoBackup = context.ctx.pageNo;
-
-                if (start < 1) {
-                    end += 1 - start;
-                    start = 1;
-                }
-
-                if (end > pagination.lastPage) {
-                    start -= end - pagination.lastPage;
-                    end = pagination.lastPage;
-                }
-
-                if (start < 1) {
-                    start = 1;
-                }
-
-                if (dotdotBody && start > 1) {
-                    res += dotdotBody();
-                }
-
-                for (var i = start; i <= end; i++) {
-                    context.ctx.pageNo = i;
-
-                    if (i === pagination.current) {
-                        res += currentBody();
-                    }
-                    else {
-                        res += body();
-                    }
-                }
-
-                if (dotdotBody && end < pagination.lastPage) {
-                    res += dotdotBody();
-                }
-
-                context.ctx.pageNo = pageNoBackup;
-
-                return new nunjucks.runtime.SafeString(res);
-            },
-        };
-
-        return ext;
-    })());
-
-    return env;
+  return env
 }
 
 // TODO: Doesn't nunjucks have its own escape function?
 function escape(str) {
-    str = str
-        .replace('&', '&amp;')
-        .replace('<', '&lt;')
-        .replace('>', '&gt;')
-        .replace('"', '&quot;');
+  str = str
+    .replace('&', '&amp;')
+    .replace('<', '&lt;')
+    .replace('>', '&gt;')
+    .replace('"', '&quot;')
 
-    return str;
+  return str
 }
 
 function trim(str) {
-    str = str
-        .replace(/^\s+/, '')
-        .replace(/\s+$/, '');
+  str = str
+    .replace(/^\s+/, '')
+    .replace(/\s+$/, '')
 
-    return str;
+  return str
 }
 
-exports = module.exports = nunjucksSetup;
+exports = module.exports = nunjucksSetup

@@ -1,3 +1,3 @@
-"use strict";
+'use strict'
 
-exports = module.exports = require('./src/Teensy');
+exports = module.exports = require('./src/Teensy')
