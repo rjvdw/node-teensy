@@ -9,9 +9,10 @@ var nunjucks = require('nunjucks')
 
 function nunjucksSetup(views) {
   var env = new nunjucks.Environment(
-    new nunjucks.FileSystemLoader(views),
-    {
+    new nunjucks.FileSystemLoader(views, {
       watch: true,
+    }),
+    {
       autoescape: true,
     }
   )
