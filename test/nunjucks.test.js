@@ -1,21 +1,21 @@
 'use strict'
 
-var path = require('path')
+const path = require('path')
 
-var expect = require('chai').expect
-var moment = require('moment')
-var should = require('chai').should()
+const expect = require('chai').expect
+const moment = require('moment')
+const should = require('chai').should()
 
-var nunjucksSetup = require('../src/nunjucksSetup')
+const nunjucksSetup = require('../src/nunjucksSetup')
 
-var nunjucks = nunjucksSetup(path.join(__dirname, 'sampleapp', 'views'))
+const nunjucks = nunjucksSetup(path.join(__dirname, 'sampleapp', 'views'))
 
 
 describe('#nunjucks', function () {
   it('should handle the date filter correctly', function () {
-    var res
+    let res
 
-    var dateStr = '2015-01-01 12:00:00'
+    const dateStr = '2015-01-01 12:00:00'
 
     res = nunjucks.renderString('{{ published | date }}', {
       published: dateStr,
@@ -27,7 +27,7 @@ describe('#nunjucks', function () {
     })
     expect(res).to.equal(moment(dateStr).format('YYYYMMDD'))
 
-    var date = new Date('2015-01-01 12:00:00')
+    const date = new Date('2015-01-01 12:00:00')
 
     res = nunjucks.renderString('{{ published | date }}', {
       published: date,
@@ -41,13 +41,13 @@ describe('#nunjucks', function () {
   })
 
   it('should handle the {% markdown %} tag correctly', function () {
-    var res = nunjucks.render('markdown_test.html')
+    const res = nunjucks.render('markdown_test.html')
 
     expect(res).to.equal('\n\n\n<h1 id="this-is-a-page-with-markdown">This is a page with markdown</h1>\n<p>It has some text.</p>\n<ul>\n<li>even a bullet list</li>\n<li>with multiple bullets</li>\n<li>imagine that</li>\n</ul>\n\n')
   })
 
   it('should handle the {% meta %} tag correctly', function () {
-    var
+    let res
 
     res = nunjucks.renderString('{% meta $meta.metaTags %}', {
       $meta: {
@@ -65,7 +65,7 @@ describe('#nunjucks', function () {
   })
 
   it('should handle the {% pagination %} tag correctly', function () {
-    var res
+    let res
 
     res = nunjucks.render('pagination_test.html', {
       pgn: {

@@ -1,29 +1,29 @@
 'use strict'
-var Promise = require('bluebird')
+const Promise = require('bluebird')
 
-var fs = Promise.promisifyAll(require('fs'))
-var path = require('path')
+const fs = Promise.promisifyAll(require('fs'))
+const path = require('path')
 
-var co = require('co')
-var yaml = require('js-yaml')
+const co = require('co')
+const yaml = require('js-yaml')
 
 
 function parseMeta(root, data) {
   return co(function *() {
-    var defaultMetaFile = path.join(root, 'meta.yml')
-    var defaultMeta = yield fs.readFileAsync(defaultMetaFile, {
+    const defaultMetaFile = path.join(root, 'meta.yml')
+    const defaultMeta = yield fs.readFileAsync(defaultMetaFile, {
       encoding: 'utf8',
     })
 
-    var parsed = {
+    const parsed = {
       meta: {},
       template: data,
     }
 
-    var start = data.indexOf('{#!')
+    const start = data.indexOf('{#!')
     if (start > -1) {
-      var end = data.indexOf('!#}', start)
-      var meta = defaultMeta
+      const end = data.indexOf('!#}', start)
+      let meta = defaultMeta
       meta += data.substring(start + '{#!'.length, end)
       parsed.meta = yaml.safeLoad(meta).meta
     }

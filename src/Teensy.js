@@ -1,23 +1,23 @@
 'use strict'
 
-var path = require('path')
+const path = require('path')
 
-var compose = require('koa-compose')
-var formatServerAddress = require('@rdcl/format-server-address')
-var koa = require('koa')
-var serve = require('koa-static')
+const compose = require('koa-compose')
+const formatServerAddress = require('@rdcl/format-server-address')
+const koa = require('koa')
+const serve = require('koa-static')
 
-var nunjucksSetup = require('./nunjucksSetup')
-var parseMeta = require('./parseMeta')
+const nunjucksSetup = require('./nunjucksSetup')
+const parseMeta = require('./parseMeta')
 
 
 function Teensy(root) {
-  var _public = path.join(root, 'public')
-  var _views = path.join(root, 'views')
+  const _public = path.join(root, 'public')
+  const _views = path.join(root, 'views')
 
-  var nunjucks = nunjucksSetup(_views)
+  const nunjucks = nunjucksSetup(_views)
 
-  var Teensy = compose([function* prepareTeensy(next) {
+  const Teensy = compose([function* prepareTeensy(next) {
     Object.defineProperty(this.state, 'teensy', {
       enumerable: true,
       value: {},
@@ -31,7 +31,7 @@ function Teensy(root) {
     // response is already handled
     if (this.body != null || this.status !== 404) return
 
-    var view = yield getView(this, root, nunjucks, '404')
+    const view = yield getView(this, root, nunjucks, '404')
 
     if (view) {
       this.body = view
@@ -46,7 +46,7 @@ function Teensy(root) {
     // response is already handled
     if (this.body != null || this.status !== 404) return
 
-    var view = yield getView(this, root, nunjucks, this.request.path)
+    const view = yield getView(this, root, nunjucks, this.request.path)
 
     if (view) {
       this.body = view
@@ -69,10 +69,10 @@ function Teensy(root) {
   })
 
   Teensy.listen = function listen(port, host, cb) {
-    var app = koa()
+    const app = koa()
     app.use(Teensy)
 
-    var server = app.listen.apply(app, arguments)
+    const server = app.listen.apply(app, arguments)
 
     server.on('listening', function () {
       console.log(
@@ -112,7 +112,7 @@ function getView(context, root, nunjucks, name) {
 
       parseMeta(root, tmpl.tmplStr)
       .then(function onSuccess(parsed) {
-        var templateData = context.state.teensy
+        const templateData = context.state.teensy
         templateData.$meta = parsed.meta
 
         resolve(tmpl.render(templateData))

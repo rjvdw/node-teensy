@@ -1,21 +1,21 @@
 'use strict'
 
-var http = require('http')
-var path = require('path')
+const http = require('http')
+const path = require('path')
 
-var expect = require('chai').expect
-var koa = require('koa')
-var should = require('chai').should()
+const expect = require('chai').expect
+const koa = require('koa')
+const should = require('chai').should()
 
-var Teensy = require('../src/Teensy')
+const Teensy = require('../src/Teensy')
 
-var sampleAppDir = path.join(__dirname, 'sampleapp')
-var sampleAppWithout404Dir = path.join(__dirname, 'sampleapp_without404')
+const sampleAppDir = path.join(__dirname, 'sampleapp')
+const sampleAppWithout404Dir = path.join(__dirname, 'sampleapp_without404')
 
 
 describe('#Teensy', function () {
   it('should create a new Teensy middleware', function (done) {
-    var teensy = Teensy(sampleAppDir)
+    const teensy = Teensy(sampleAppDir)
 
     expect(teensy).to.be.a('function')
     expect(teensy.constructor.name).to.equal('GeneratorFunction')
@@ -48,15 +48,15 @@ describe('#Teensy', function () {
   })
 
   it('should start a HTTP server with the .listen method', function (done) {
-    var server = Teensy(sampleAppDir).listen(function () {
+    const server = Teensy(sampleAppDir).listen(function () {
       done()
       server.close()
     })
   })
 
   it('should return valid responses', function (done) {
-    var server = Teensy(sampleAppDir).listen(function () {
-      var addr = server.address()
+    const server = Teensy(sampleAppDir).listen(function () {
+      const addr = server.address()
 
       http.get({
         host: addr.address,
@@ -68,7 +68,7 @@ describe('#Teensy', function () {
         expect(res).to.have.property('statusCode', 200)
 
         res.setEncoding('utf8')
-        var body = ''
+        let body = ''
         res.on('data', function (chunk) {
           body += chunk
         })
@@ -83,8 +83,8 @@ describe('#Teensy', function () {
   })
 
   it('should return a 404 response if the requested url does not exist', function (done) {
-    var server = Teensy(sampleAppDir).listen(function () {
-      var addr = server.address()
+    const server = Teensy(sampleAppDir).listen(function () {
+      const addr = server.address()
 
       http.get({
         host: addr.address,
@@ -96,7 +96,7 @@ describe('#Teensy', function () {
         expect(res).to.have.property('statusCode', 404)
 
         res.setEncoding('utf8')
-        var body = ''
+        let body = ''
         res.on('data', function (chunk) {
           body += chunk
         })
@@ -111,8 +111,8 @@ describe('#Teensy', function () {
   })
 
   it('should return a generic 404 if the 404 template also does not exist', function (done) {
-    var server = Teensy(sampleAppWithout404Dir).listen(function () {
-      var addr = server.address()
+    const server = Teensy(sampleAppWithout404Dir).listen(function () {
+      const addr = server.address()
 
       http.get({
         host: addr.address,
@@ -124,7 +124,7 @@ describe('#Teensy', function () {
         expect(res).to.have.property('statusCode', 404)
 
         res.setEncoding('utf8')
-        var body = ''
+        let body = ''
         res.on('data', function (chunk) {
           body += chunk
         })
@@ -139,7 +139,7 @@ describe('#Teensy', function () {
   })
 
   it('should do nothing if other middleware already gave a response', function (done) {
-    var app = koa()
+    const app = koa()
 
     app.use(Teensy(sampleAppDir))
     app.use(function* (next) {
@@ -147,8 +147,8 @@ describe('#Teensy', function () {
       yield* next
     })
 
-    var server = app.listen(function () {
-      var addr = server.address()
+    const server = app.listen(function () {
+      const addr = server.address()
 
       http.get({
         host: addr.address,
@@ -160,7 +160,7 @@ describe('#Teensy', function () {
         expect(res).to.have.property('statusCode', 200)
 
         res.setEncoding('utf8')
-        var body = ''
+        let body = ''
         res.on('data', function (chunk) {
           body += chunk
         })
@@ -175,8 +175,8 @@ describe('#Teensy', function () {
   })
 
   it('requests other than GET an HEAD should be ignored', function (done) {
-    var server = Teensy(sampleAppDir).listen(function () {
-      var addr = server.address()
+    const server = Teensy(sampleAppDir).listen(function () {
+      const addr = server.address()
 
       http.get({
         host: addr.address,
@@ -188,7 +188,7 @@ describe('#Teensy', function () {
         expect(res).to.have.property('statusCode', 404)
 
         res.setEncoding('utf8')
-        var body = ''
+        let body = ''
         res.on('data', function (chunk) {
           body += chunk
         })

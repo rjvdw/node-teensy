@@ -1,14 +1,14 @@
 'use strict'
 
-var util = require('util')
+const util = require('util')
 
-var marked = require('marked')
-var moment = require('moment')
-var nunjucks = require('nunjucks')
+const marked = require('marked')
+const moment = require('moment')
+const nunjucks = require('nunjucks')
 
 
 function nunjucksSetup(views) {
-  var env = new nunjucks.Environment(
+  const env = new nunjucks.Environment(
     new nunjucks.FileSystemLoader(views, {
       watch: true,
     }),
@@ -26,22 +26,22 @@ function nunjucksSetup(views) {
   })
 
   env.addExtension('MarkdownParser', (function () {
-    var ext = {
+    const ext = {
       tags: ['markdown'],
 
       parse: function (parser, nodes, lexer) {
-        var tok = parser.nextToken()
-        var args = parser.parseSignature(null, true)
+        const tok = parser.nextToken()
+        const args = parser.parseSignature(null, true)
         parser.advanceAfterBlockEnd(tok.value)
 
-        var body = parser.parseUntilBlocks('endmarkdown')
+        const body = parser.parseUntilBlocks('endmarkdown')
         parser.advanceAfterBlockEnd()
 
         return new nodes.CallExtension(ext, 'run', args, [body])
       },
 
       run: function (context, body) {
-        var md = marked(body())
+        const md = marked(body())
 
         return new nunjucks.runtime.SafeString(md)
       },
@@ -51,26 +51,26 @@ function nunjucksSetup(views) {
   })())
 
   env.addExtension('MetaTags', (function () {
-    var ext = {
+    const ext = {
       tags: ['meta'],
 
       parse: function (parser, nodes, lexer) {
-        var tok = parser.nextToken()
-        var args = parser.parseSignature(null, true)
+        const tok = parser.nextToken()
+        const args = parser.parseSignature(null, true)
         parser.advanceAfterBlockEnd(tok.value)
 
         return new nodes.CallExtension(ext, 'run', args)
       },
 
       run: function (context, metaTags) {
-        var res = ''
+        let res = ''
 
         if (metaTags != null) {
-          var metaKeys = Object.keys(metaTags)
+          const metaKeys = Object.keys(metaTags)
           metaKeys.sort()
 
           metaKeys.forEach(function (name) {
-            var content = metaTags[name]
+            let content = metaTags[name]
             if (Array.isArray(content)) {
               content = content.join(',')
             }
@@ -91,20 +91,20 @@ function nunjucksSetup(views) {
   })())
 
   env.addExtension('Pagination', (function () {
-    var ext = {
+    const ext = {
       tags: ['pagination'],
 
       parse: function (parser, nodes, lexer) {
-        var tok = parser.nextToken()
-        var args = parser.parseSignature(null, true)
+        const tok = parser.nextToken()
+        const args = parser.parseSignature(null, true)
         parser.advanceAfterBlockEnd(tok.value)
 
-        var body = parser.parseUntilBlocks('current')
+        const body = parser.parseUntilBlocks('current')
         parser.skipSymbol('current')
         parser.skip(lexer.TOKEN_BLOCK_END)
 
-        var currentBody = parser.parseUntilBlocks('dotdot', 'endpagination')
-        var dotdotBody = null
+        const currentBody = parser.parseUntilBlocks('dotdot', 'endpagination')
+        let dotdotBody = null
 
         if (parser.skipSymbol('dotdot')) {
           parser.skip(lexer.TOKEN_BLOCK_END)
@@ -117,12 +117,12 @@ function nunjucksSetup(views) {
       },
 
       run: function (context, pagination, nrAround, body, currentBody, dotdotBody) {
-        var res = ''
-        var start = pagination.current - nrAround
-        var end = pagination.current + nrAround
+        let res = ''
+        let start = pagination.current - nrAround
+        let end = pagination.current + nrAround
 
         // TODO: Is there a nicer way of doing this?
-        var pageNoBackup = context.ctx.pageNo
+        const pageNoBackup = context.ctx.pageNo
 
         if (start < 1) {
           end += 1 - start
@@ -142,7 +142,7 @@ function nunjucksSetup(views) {
           res += dotdotBody()
         }
 
-        for (var i = start; i <= end; i++) {
+        for (let i = start; i <= end; i++) {
           context.ctx.pageNo = i
 
           if (i === pagination.current) {
