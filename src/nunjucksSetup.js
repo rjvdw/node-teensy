@@ -29,7 +29,7 @@ function nunjucksSetup(views) {
     const ext = {
       tags: ['markdown'],
 
-      parse: function (parser, nodes, lexer) {
+      parse(parser, nodes, lexer) {
         const tok = parser.nextToken()
         const args = parser.parseSignature(null, true)
         parser.advanceAfterBlockEnd(tok.value)
@@ -40,7 +40,7 @@ function nunjucksSetup(views) {
         return new nodes.CallExtension(ext, 'run', args, [body])
       },
 
-      run: function (context, body) {
+      run(context, body) {
         const md = marked(body())
 
         return new nunjucks.runtime.SafeString(md)
@@ -54,7 +54,7 @@ function nunjucksSetup(views) {
     const ext = {
       tags: ['meta'],
 
-      parse: function (parser, nodes, lexer) {
+      parse(parser, nodes, lexer) {
         const tok = parser.nextToken()
         const args = parser.parseSignature(null, true)
         parser.advanceAfterBlockEnd(tok.value)
@@ -62,7 +62,7 @@ function nunjucksSetup(views) {
         return new nodes.CallExtension(ext, 'run', args)
       },
 
-      run: function (context, metaTags) {
+      run(context, metaTags) {
         let res = ''
 
         if (metaTags != null) {
@@ -94,7 +94,7 @@ function nunjucksSetup(views) {
     const ext = {
       tags: ['pagination'],
 
-      parse: function (parser, nodes, lexer) {
+      parse(parser, nodes, lexer) {
         const tok = parser.nextToken()
         const args = parser.parseSignature(null, true)
         parser.advanceAfterBlockEnd(tok.value)
@@ -116,7 +116,7 @@ function nunjucksSetup(views) {
         return new nodes.CallExtension(ext, 'run', args, [body, currentBody, dotdotBody])
       },
 
-      run: function (context, pagination, nrAround, body, currentBody, dotdotBody) {
+      run(context, pagination, nrAround, body, currentBody, dotdotBody) {
         let res = ''
         let start = pagination.current - nrAround
         let end = pagination.current + nrAround

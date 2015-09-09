@@ -63,7 +63,7 @@ function Teensy(root) {
 
   Object.defineProperty(Teensy, 'nunjucks', {
     enumerable: true,
-    get: function get() {
+    get() {
       return nunjucks
     },
   })
@@ -111,15 +111,15 @@ function getView(context, root, nunjucks, name) {
       }
 
       parseMeta(root, tmpl.tmplStr)
-      .then(function onSuccess(parsed) {
-        const templateData = context.state.teensy
-        templateData.$meta = parsed.meta
+        .then(function onSuccess(parsed) {
+          const templateData = context.state.teensy
+          templateData.$meta = parsed.meta
 
-        resolve(tmpl.render(templateData))
-      })
-      .catch(function onError(err) {
-        reject(err)
-      })
+          resolve(tmpl.render(templateData))
+        })
+        .catch(function onError(err) {
+          reject(err)
+        })
     })
   })
 }
