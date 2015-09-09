@@ -88,11 +88,11 @@ function Teensy(root) {
 }
 
 function getView(context, root, nunjucks, name) {
-  if (name[name.length - 1] === '/') {
+  if (name.endsWith('/')) {
     name += 'index'
   }
 
-  if (name[0] === '/') {
+  if (name.startsWith('/')) {
     name = name.substring(1)
   }
 
@@ -101,7 +101,7 @@ function getView(context, root, nunjucks, name) {
   return new Promise(function executor(resolve, reject) {
     nunjucks.getTemplate(name, function (err, tmpl) {
       if (err) {
-        if (err.message.indexOf('template not found') === 0) {
+        if (err.message.startsWith('template not found')) {
           resolve(null)
           return
         }
