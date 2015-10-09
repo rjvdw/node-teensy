@@ -25,10 +25,10 @@ function Teensy(root) {
 
     yield* next
 
-    // only handle HEAD and GET requests
+// only handle HEAD and GET requests
     if (this.method !== 'HEAD' && this.method !== 'GET') return
 
-    // response is already handled
+// response is already handled
     if (this.body != null || this.status !== 404) return
 
     const view = yield getView(this, root, nunjucks, '404')
@@ -40,10 +40,10 @@ function Teensy(root) {
   }, serve(_public), function* Teensy(next) {
     yield* next
 
-    // only handle HEAD and GET requests
+// only handle HEAD and GET requests
     if (this.method !== 'HEAD' && this.method !== 'GET') return
 
-    // response is already handled
+// response is already handled
     if (this.body != null || this.status !== 404) return
 
     const view = yield getView(this, root, nunjucks, this.request.path)
