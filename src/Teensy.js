@@ -37,7 +37,9 @@ function Teensy(root) {
       this.body = view
       this.status = 404
     }
-  }, serve(_public), function* Teensy(next) {
+  }, serve(_public, {
+    format: false,
+  }), function* Teensy(next) {
     yield* next
 
     // only handle HEAD and GET requests
