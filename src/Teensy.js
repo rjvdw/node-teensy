@@ -39,6 +39,7 @@ function Teensy(root) {
     }
   }, serve(_public, {
     format: false,
+    hidden: true,
   }), function* Teensy(next) {
     yield* next
 
