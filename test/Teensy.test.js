@@ -82,6 +82,34 @@ describe('#Teensy', function () {
     })
   })
 
+  it('should serve static files from public', function (done) {
+    const server = Teensy(sampleAppDir).listen(function () {
+      const addr = server.address()
+
+      http.get({
+        host: addr.address,
+        port: addr.port,
+        method: 'GET',
+        path: '/file.txt',
+      }, function (res) {
+        should.exist(res)
+        expect(res).to.have.property('statusCode', 200)
+
+        res.setEncoding('utf8')
+        let body = ''
+        res.on('data', function (chunk) {
+          body += chunk
+        })  
+
+        res.on('end', function() {
+          expect(body).to.equal('test\n')
+          server.close()
+          done()
+        })  
+      })  
+    })  
+  })  
+
   it('should return a 404 response if the requested url does not exist', function (done) {
     const server = Teensy(sampleAppDir).listen(function () {
       const addr = server.address()
