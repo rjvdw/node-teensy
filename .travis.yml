@@ -9,4 +9,8 @@ install:
 script:
   - npm run cover
 
+branches:
+   except:
+     - "v3.0.0-alpha"
+
 after_script: "cat coverage/lcov.info | node_modules/.bin/coveralls"
