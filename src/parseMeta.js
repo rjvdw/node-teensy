@@ -1,15 +1,14 @@
 'use strict'
-const Promise = require('bluebird')
+const Bluebird = require('bluebird')
 
-const fs = Promise.promisifyAll(require('fs'))
+const fs = Bluebird.promisifyAll(require('fs'))
 const path = require('path')
 
-const co = require('co')
 const yaml = require('js-yaml')
 
 
 function parseMeta(root, data) {
-  return co(function *() {
+  return Bluebird.coroutine(function *() {
     const defaultMetaFile = path.join(root, 'meta.yml')
     const defaultMeta = yield fs.readFileAsync(defaultMetaFile, {
       encoding: 'utf8',
@@ -29,7 +28,7 @@ function parseMeta(root, data) {
     }
 
     return parsed
-  })
+  })()
 }
 
 exports = module.exports = parseMeta

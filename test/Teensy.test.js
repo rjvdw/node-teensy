@@ -4,7 +4,7 @@ const http = require('http')
 const path = require('path')
 
 const expect = require('chai').expect
-const koa = require('koa')
+const Koa = require('koa')
 const should = require('chai').should()
 
 const Teensy = require('../src/Teensy')
@@ -18,7 +18,6 @@ describe('#Teensy', function () {
     const teensy = Teensy(sampleAppDir)
 
     expect(teensy).to.be.a('function')
-    expect(teensy.constructor.name).to.equal('GeneratorFunction')
     expect(teensy).to.have.property('listen')
     expect(teensy).to.have.property('parseMeta')
     expect(teensy).to.have.property('nunjucks')
@@ -99,7 +98,7 @@ describe('#Teensy', function () {
         let body = ''
         res.on('data', function (chunk) {
           body += chunk
-        })  
+        })
 
         res.on('end', function() {
           expect(body).to.equal('test\n')
@@ -167,12 +166,13 @@ describe('#Teensy', function () {
   })
 
   it('should do nothing if other middleware already gave a response', function (done) {
-    const app = koa()
+    const app = new Koa()
 
     app.use(Teensy(sampleAppDir))
-    app.use(function* (next) {
-      this.body = 'foo'
-      yield* next
+    app.use((ctx, next) => {
+      ctx.body = 'foo'
+
+      return next()
     })
 
     const server = app.listen(function () {

@@ -1,10 +1,11 @@
 'use strict'
+const Bluebird = require('bluebird')
 
 const path = require('path')
 
 const compose = require('koa-compose')
 const formatServerAddress = require('@rdcl/format-server-address')
-const koa = require('koa')
+const Koa = require('koa')
 const serve = require('koa-static')
 
 const nunjucksSetup = require('./nunjucksSetup')
@@ -17,52 +18,51 @@ function Teensy(root) {
 
   const nunjucks = nunjucksSetup(_views)
 
-  const Teensy = compose([function* prepareTeensy(next) {
-    Object.defineProperty(this.state, 'teensy', {
-      enumerable: true,
-      value: {},
-    })
+  const Teensy = compose([
+    Bluebird.coroutine(function* prepareTeensy(ctx, next) {
+      Object.defineProperty(ctx.state, 'teensy', {
+        enumerable: true,
+        value: {},
+      })
 
-    yield* next
+      yield next()
 
-    // only handle HEAD and GET requests
-    if (this.method !== 'HEAD' && this.method !== 'GET') return
+      // only handle HEAD and GET requests
+      if (ctx.method !== 'HEAD' && ctx.method !== 'GET') return
 
-    // response is already handled
-    if (this.body != null || this.status !== 404) return
+      // response is already handled
+      if (ctx.body != null || ctx.status !== 404) return
 
-    const view = yield getView(this, root, nunjucks, '404')
+      const view = yield getView(ctx, root, nunjucks, '404')
 
-    if (view) {
-      this.body = view
-      this.status = 404
-    }
-  }, serve(_public, {
-    format: false,
-    hidden: true,
-  }), function* Teensy(next) {
-    yield* next
+      if (view) {
+        ctx.body = view
+        ctx.status = 404
+      }
+    }),
+    //serve(_public, {
+    //  format: false,
+    //  hidden: true,
+    //}),
+    Bluebird.coroutine(function* Teensy(ctx, next) {
+      yield next()
 
-    // only handle HEAD and GET requests
-    if (this.method !== 'HEAD' && this.method !== 'GET') return
+      // only handle HEAD and GET requests
+      if (ctx.method !== 'HEAD' && ctx.method !== 'GET') return
 
-    // response is already handled
-    if (this.body != null || this.status !== 404) return
+      // response is already handled
+      if (ctx.body != null || ctx.status !== 404) return
 
-    const view = yield getView(this, root, nunjucks, this.request.path)
+      const view = yield getView(ctx, root, nunjucks, ctx.request.path)
 
-    if (view) {
-      this.body = view
-    }
-  }])
+      if (view) {
+        ctx.body = view
+      }
+    }),
+  ])
 
-  Teensy.getView = function (context, target) {
-    return getView(context, root, nunjucks, target)
-  }
-
-  Teensy.parseMeta = function parseMeta(data) {
-    return require('./parseMeta')(root, data)
-  }
+  Teensy.getView = (context, target) => getView(context, root, nunjucks, target)
+  Teensy.parseMeta = (data) => require('./parseMeta')(root, data)
 
   Object.defineProperty(Teensy, 'nunjucks', {
     enumerable: true,
@@ -72,12 +72,12 @@ function Teensy(root) {
   })
 
   Teensy.listen = function listen(port, host, cb) {
-    const app = koa()
+    const app = new Koa()
     app.use(Teensy)
 
     const server = app.listen.apply(app, arguments)
 
-    server.on('listening', function () {
+    server.on('listening', () => {
       console.log(
         'listening at %s',
         formatServerAddress(server.address())
