@@ -1,7 +1,7 @@
 'use strict'
-const Promise = require('bluebird')
+const Bluebird = require('bluebird')
 
-const fs = Promise.promisifyAll(require('fs'))
+const fs = Bluebird.promisifyAll(require('fs'))
 const path = require('path')
 
 const co = require('co')
