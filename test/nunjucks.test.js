@@ -107,6 +107,14 @@ describe('#nunjucks', function () {
     })
     expect(res).to.equal('<ul>\n\n  <li>...</li>\n\n  <li><a href="?pageNo=6">6</a></li>\n\n  <li><a href="?pageNo=7">7</a></li>\n\n  <li><a href="?pageNo=8">8</a></li>\n\n  <li><a href="?pageNo=9">9</a></li>\n\n  <li class="active">10</li>\n\n</ul>\n')
 
+    res = nunjucks.render('pagination_test.html', {
+      pgn: {
+        current: 2,
+        lastPage: 2,
+      },
+    })
+    expect(res).to.equal('<ul>\n\n  <li><a href="?pageNo=1">1</a></li>\n\n  <li class="active">2</li>\n\n</ul>\n')
+
     res = nunjucks.render('pagination_test2.html', {
       pgn: {
         current: 5,
