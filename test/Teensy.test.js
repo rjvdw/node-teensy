@@ -17,7 +17,7 @@ describe('#Teensy', function () {
   it('should create a new Teensy middleware', function (done) {
     const teensy = Teensy(sampleAppDir)
 
-    expect(teensy).to.be.a('function')
+    expect(teensy).to.be.a.function
     expect(teensy.constructor.name).to.equal('GeneratorFunction')
     expect(teensy).to.have.property('listen')
     expect(teensy).to.have.property('parseMeta')
