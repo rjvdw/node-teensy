@@ -30,12 +30,12 @@ project-root/
 
 ```javascript
 // index.js
-"use strict";
+'use strict'
 
-var teensy = require('@rdcl/teensy')(__dirname);
-var app = require('koa')();
+const teensy = require('@rdcl/teensy')(__dirname)
+const app = require('koa')()
 
-app.use(teensy);
+app.use(teensy)
 app.listen(3000)
 ```
 
