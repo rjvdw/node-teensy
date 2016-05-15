@@ -1,7 +1,5 @@
 'use strict'
 
-const util = require('util')
-
 const marked = require('marked')
 const moment = require('moment')
 const nunjucks = require('nunjucks')
@@ -17,17 +15,14 @@ function nunjucksSetup(views) {
     }
   )
 
-  env.addFilter('date', function (value, format) {
-    return (
-      format == null
-        ? moment(value).format()
-        : moment(value).format(format)
-    )
-  })
+  env.addFilter('date', (value, format) => format == null
+    ? moment(value).format()
+    : moment(value).format(format)
+  )
 
-  env.addExtension('MarkdownParser', (function () {
+  env.addExtension('MarkdownParser', (() => {
     const ext = {
-      tags: ['markdown'],
+      tags: [ 'markdown' ],
 
       parse(parser, nodes, lexer) {
         const tok = parser.nextToken()
@@ -37,7 +32,7 @@ function nunjucksSetup(views) {
         const body = parser.parseUntilBlocks('endmarkdown')
         parser.advanceAfterBlockEnd()
 
-        return new nodes.CallExtension(ext, 'run', args, [body])
+        return new nodes.CallExtension(ext, 'run', args, [ body ])
       },
 
       run(context, body) {
@@ -50,9 +45,9 @@ function nunjucksSetup(views) {
     return ext
   })())
 
-  env.addExtension('MetaTags', (function () {
+  env.addExtension('MetaTags', (() => {
     const ext = {
-      tags: ['meta'],
+      tags: [ 'meta' ],
 
       parse(parser, nodes, lexer) {
         const tok = parser.nextToken()
@@ -69,18 +64,14 @@ function nunjucksSetup(views) {
           const metaKeys = Object.keys(metaTags)
           metaKeys.sort()
 
-          metaKeys.forEach(function (name) {
+          for (const name of metaKeys) {
             let content = metaTags[name]
             if (Array.isArray(content)) {
               content = content.join(',')
             }
 
-            res += util.format(
-              '<meta name="%s" content="%s">\n',
-              trim(escape(name)),
-              trim(escape(content))
-            )
-          })
+            res += trimAndEscape`<meta name="${name}" content="${content}">\n`
+          }
         }
 
         return new nunjucks.runtime.SafeString(res)
@@ -90,9 +81,9 @@ function nunjucksSetup(views) {
     return ext
   })())
 
-  env.addExtension('Pagination', (function () {
+  env.addExtension('Pagination', (() => {
     const ext = {
-      tags: ['pagination'],
+      tags: [ 'pagination' ],
 
       parse(parser, nodes, lexer) {
         const tok = parser.nextToken()
@@ -113,7 +104,7 @@ function nunjucksSetup(views) {
 
         parser.advanceAfterBlockEnd()
 
-        return new nodes.CallExtension(ext, 'run', args, [body, currentBody, dotdotBody])
+        return new nodes.CallExtension(ext, 'run', args, [ body, currentBody, dotdotBody ])
       },
 
       run(context, pagination, nrAround, body, currentBody, dotdotBody) {
@@ -186,6 +177,20 @@ function trim(str) {
     .replace(/\s+$/, '')
 
   return str
+}
+
+function trimAndEscape(strings, ...values) {
+  let result = strings[0]
+  const valuesL = values.length
+
+  for (let i = 0; i < valuesL; i += 1) {
+    const value = values[i]
+    const string = strings[i + 1]
+
+    result += escape(trim(value)) + string
+  }
+
+  return result
 }
 
 exports = module.exports = nunjucksSetup

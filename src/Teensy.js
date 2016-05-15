@@ -77,7 +77,7 @@ function Teensy(root) {
 
     const server = app.listen.apply(app, arguments)
 
-    server.on('listening', function () {
+    server.on('listening', () => {
       console.log(
         'listening at %s',
         formatServerAddress(server.address())
@@ -101,8 +101,8 @@ function getView(context, root, nunjucks, name) {
 
   name += '.html'
 
-  return new Promise(function executor(resolve, reject) {
-    nunjucks.getTemplate(name, function (err, tmpl) {
+  return new Promise((resolve, reject) => {
+    nunjucks.getTemplate(name, (err, tmpl) => {
       if (err) {
         if (err.message.startsWith('template not found')) {
           resolve(null)
@@ -114,15 +114,13 @@ function getView(context, root, nunjucks, name) {
       }
 
       parseMeta(root, tmpl.tmplStr)
-        .then(function onSuccess(parsed) {
+        .then(parsed => {
           const templateData = context.state.teensy
           templateData.$meta = parsed.meta
 
           resolve(tmpl.render(templateData))
         })
-        .catch(function onError(err) {
-          reject(err)
-        })
+        .catch(err => reject(err))
     })
   })
 }
